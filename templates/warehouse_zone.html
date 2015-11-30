@@ -1,0 +1,78 @@
+			{% extends 'base.html' %}
+			{% load i18n staticfiles %}
+			{% load i18n_extras %}
+			{% block styles %}
+			<link rel="stylesheet" href="{% static "js/vendor/bootstrap.min.css"%}">
+			{% endblock %}
+			{% block content %}
+
+			{% verbatim %} 
+
+
+			<div class="container" ng-app="gtsApp" ng-controller="mainCtrl" >
+
+
+				<h3 class="title" translate> Warehouse zone </h3>
+				<div ng-controller="refWareHousezoneCtrl">
+
+					<table id="warehousezone-list" class="display" gts-table table-data="shared.warehousezone">
+
+						<thead>
+							<tr>
+								<th style="width: 75px;" translate>Zone</th>
+								<th style="width: 275px" translate>Description</th>
+								<th style="width: 275px" translate>Escale</th> 
+							</tr>
+						</thead>
+						<tbody ng-click="shared.actionsToProceedWhenClickOnTable( $event )" ng-dblclick="shared.actionsToProceedWhenDblClickOnTable( $event )">
+						</tbody>
+					</table>
+					<br>
+					<form class="form-inline" id="unvisible-aera">
+
+						<div class="form-group">
+
+							<div class="form-group">
+								<label for="exampleInputFile">Zone</label>
+								<input   capitalize class="form-control input-sm" ng-disabled="shared.typeAction != 'new'" ng-model="shared.activewarehousezone.zone"  id="wazo_zone" type="text" >
+							</div>
+							<label for="exampleInputEmail1">Description</label>
+							<input class="form-control input-sm "  ng-disabled="!shared.inAction" ng-model="shared.activewarehousezone.description"  id="description" type="text" maxChoice="1" >
+						</div>
+
+						<div class="form-group">
+							<label for="exampleInputFile">Escale</label>
+							<ref-picker id="offloads" ng-disabled="!shared.inAction" ng-model="shared.activewarehousezone.stop" type-ref="iata" wanted="1" description="2" max-choice="1" ></ref-picker  >
+						</div >
+
+						<button class="btn btn-primary" ng-if="!shared.inAction" ng-click="shared.add()" translate>Add</button> 
+						<button class="btn btn-success" ng-if="shared.inAction"ng-click="shared.ok()">Ok</button>
+						<button class="btn btn-danger" ng-if="shared.inAction"ng-click="shared.cancel()" translate>Cancel</button>    
+
+					</form>
+				</div>
+				<div id="action-bar" style="color: red">
+
+					<span ng-repeat="(k, mes) in shared.errors">
+						<span class=" alert alert-danger" role="alert">
+							<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+							<span class="sr-only">Error:</span>
+
+							{{ k | translate }}: {{ mes[0] }} 
+
+						</span>
+					</span>
+				</div>
+
+				{% endverbatim %}
+				{% endblock %}
+
+
+				{% block scripts %}
+				<script src="{% static "js/vendor/underscore-1.7.0.min.js" %}"></script>
+				<script src="{% static "js/ref_selector.js" %}"></script>
+				<script src="{% static "js/warehouse_zone.js" %}"></script>
+
+
+
+				{% endblock %}
