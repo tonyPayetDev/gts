@@ -1,0 +1,253 @@
+			{% extends 'base.html' %}
+			{% load i18n staticfiles %}
+			{% load i18n_extras %}
+			{% block styles %}
+
+			<style type="text/css">
+
+				#myModalfunction .modal-dialog
+				{
+					width: 45%;
+				}
+
+			</style>
+
+			{% endblock %}
+			{% block content %}
+
+			{% verbatim %} 
+
+			<div class="container" ng-app="gtsApp" ng-controller="mainCtrl" ng-init="model = { value: 'dsf'}" >
+
+
+
+				<h3 class="title" translate > Groups </h3>
+				<div ng-controller="refgroupCtrl">
+
+					<table  class="display cell-border" id="group-list" ng-click="shared.test()"  class="display" gts-table table-data="shared.group"  ng-model="shared.groupid" >
+
+						<thead>
+							<tr>
+								<th style="width: 75px;" translate>Name group</th>
+								<th style="width: 275px" translate>Description</th>
+
+							</tr>
+						</thead>
+						<tbody ng-click="shared.actionsToProceedWhenClickOnTable( $event )" ng-dblclick="shared.actionsToProceedWhenDblClickOnTable( $event )">
+						</tbody>
+					</table>
+					<br>
+
+
+					<button class="btn btn-primary"  data-toggle="modal" ng-click="shared.add()" data-target="#myModalgroup" translate>Add</button> 
+
+
+					<!-- Trigger the modal with a button -->
+
+					<!-- Modal -->
+					<div id="myModalgroup" class="modal fade" role="dialog">
+						<div class="modal-dialog">
+
+							<!-- Modal content-->
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal">&times;</button>
+									<h4 class="modal-title"  ng-if="shared.typeAction=='new'" translate >New group</h4>
+									<h4 class="modal-title" ng-if="shared.typeAction=='alter'" translate >Alter group</h4>
+
+								</div>
+								<div class="modal-body">
+
+									<form name="myForm" class=" form-inline" id="unvisible-aera" >
+
+										<div  ng-class="{ 'has-error': myForm.groupname.$error.pattern  || shared.errors  }" >
+											<div class="row ">
+												<label class="col-md-3" for="exampleInputEmail1" translate >Name group:</label>
+												<input 
+												focus-me="true" 
+												name="groupname"
+												class="col-md-5 form-control  has-error" 
+												ng-disabled="!shared.inAction" 
+												ng-model="shared.activegroup.grp_groupname" 
+												id="grp_groupname" type="text" maxChoice="1" 
+												pu-elastic-input
+												pu-elastic-input-minwidth="200px" pu-elastic-input-maxwidth="300px"
+												ng-pattern="/^[a-zA-Z0-9_ èé]+$/"
+												>
+
+											</div >
+											<div class="row ">
+
+												<span id="helpBlock2" class="col-lg-2"  ng-show="myForm.groupname.$error.pattern" translate > 				
+
+												</span>
+												<span id="helpBlock2" class="col-lg-10 text-danger"  ng-show="myForm.groupname.$error.pattern" translate > 				
+													Special character allowed
+												</span>
+
+												<div class="row">
+													<span class="col-lg-3" ></span>
+													<span id="helpBlock2" class=" text-danger "  ng-show="shared.errors.grp_groupname[0]&& shared.errors.grp_groupname[0]!='exists' && shared.errors.grp_groupname[0]!='mandatory'" translate >{{shared.errors.grp_groupname[0]}}
+													</span>
+													<span id="helpBlock2" class=" text-danger "  ng-show="shared.errors.grp_groupname[0]=='mandatory'" translate  >This field is mandatory.
+													</span>
+													<span id="helpBlock2" class=" text-danger "  ng-show="shared.errors.grp_groupname[0]=='exists'" translate > Group already exists
+													</div>
+												</div >
+
+											</div >
+
+											<div class="row">
+												<label class="col-md-3" for="exampleInputEmail1">Description:</label>
+												<input  
+												class=" col-md-5 form-control"  ng-disabled="!shared.inAction" ng-model="shared.activegroup.grp_description"  id="description" type="text" maxChoice="1"	
+												pu-elastic-input
+												pu-elastic-input-minwidth="200px" pu-elastic-input-maxwidth="530px"
+												>
+
+											</div >
+
+											<button type="button" class="btn btn-primary btn-sm" data-toggle="modal"  ng-click="shared.addfunction()"  data-target="#myModalfunction" translate>
+												add functions
+											</button>
+
+										</form>
+
+									</div>
+									<div class="modal-footer">
+
+
+										<button   ng-click="shared.cancel()"  class="btn btn-default" data-dismiss="modal" translate >Cancel</button>
+										<button class="btn btn-success"  ng-disabled="myForm.groupname.$error.pattern" ng-if="shared.inAction" ng-click="shared.ok()"  >Ok</button>
+									</div>
+
+								</div>
+
+							</div>
+						</div>
+
+
+
+						<!-- Modal -->
+						<div class="modal fade" id="myModalfunction"  role="dialog" aria-labelledby="myModalLabel">
+							<div class="modal-dialog"  role="document">
+								<div class="modal-content">
+									<div class="modal-header">
+										<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+										<h4 class="modal-title" id="myModalLabel" translate >Add functions</h4>
+									</div>
+									<div class="modal-body">
+
+
+
+										<div  ng-show="shared.typeAction == 'alter'" >
+											<label for="exampleInputEmail1" translate >Name group:</label>
+											<input class="form-control input-sm "  ng-disabled="shared.inAction" ng-model="shared.activegroup.grp_groupname"  id="description" type="text" maxChoice="1"  >
+
+
+											<label for="exampleInputEmail1 " translate>Description:</label>
+											<input class="form-control input-sm "  ng-disabled="shared.inAction" ng-model=" $scope.shared.activegroup.functions"  id="description" type="text" maxChoice="1" ><br>
+										</div>
+
+									<!-- 	
+
+									<gts-dispatcher left-list="shared.functionsWithoutFunctionsOfSelectedGroup" left-list-name="Groupes" right-list="shared.activegroup.functions" right-list-name="Groupe de l'utilisateur">  </gts-dispatcher> 
+								-->
+								<div class="simpleDemo row"  ng-init="outerIndex = shared.activegroup.functions">
+									<div class="col-md-6">
+										<div class=" panelsimple panel-info">
+											<div class="panel-heading">
+												<h3 class="panel-title  text-center "translate >All functions </h3>
+												<input class="form-control" type="text" ng-model="q">
+											</div>
+											<div data-drop="true" class="panel-body " ng-model='shared.functionsWithoutFunctionsOfSelectedGroup' jqyoui-droppable="{multiple:true}"  >
+												<div class="overflow" >
+													<ul dnd-list   >
+
+
+														<li  
+
+														ng-class="{'selected':hover}"
+														ng-mousedown="hover=true"  ng-mouseleave="hover=false"														
+														dnd-selected="item"
+														toggle-class model="model"
+														ng-repeat='item in shared.functionsWithoutFunctionsOfSelectedGroup | filter : q'   ng-show="item" data-drag="true" 
+														data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" 
+														ng-model="shared.functionsWithoutFunctionsOfSelectedGroup" 
+														jqyoui-draggable="{index: shared.functionsWithoutFunctionsOfSelectedGroup.indexOf(item) ,animate: true}"  >{{item}}</li>
+
+
+													</ul>
+												</div>
+											</div>
+										</div>
+									</div>
+
+									<div class="col-md-6">
+										<div class="  panelsimple panel-info">
+											<div class="panel-heading"> 
+												<h3 class="panel-title text-center " translate  >Selected functions </h3>
+												<input class="form-control" ng-model="r">
+											</div>
+											<div class="panel-body  " data-drop="true" ng-model='shared.activegroup.functions'  jqyoui-droppable="{multiple:true}" > 
+
+												<div class="overflow" >
+
+													<ul dnd-list >
+
+														<li 
+														ng-class="{'selected':hover}"
+														ng-mousedown="hover=true"  ng-mouseleave="hover=false"			
+														toggle-class model="model"
+														ng-repeat="item in shared.activegroup.functions | filter : r" ng-show="item" 
+														data-drag="true" 
+														data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" 
+														ng-model="shared.activegroup.functions"
+														jqyoui-draggable="{index: {{$index}},animate:true}">{{item}}</li>
+													</ul>
+												</div>
+
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-default"  ng-click="shared.cancelfunctions()"  data-dismiss="modal" translate >Cancel</button>
+									<button type="button" class="btn btn-success"   data-dismiss="modal" translate  >Ok</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+
+
+
+		<!-- 					<gts-debug  debug="shared.activegroup" > </gts-debug > 
+	-->				
+
+
+
+
+
+	{% endverbatim %}
+	{% endblock %}
+
+
+	{% block scripts %}
+	<script src="{% static "js/vendor/underscore-1.7.0.min.js" %}"></script>
+	<script src="{% static "js/ref_selector.js" %}"></script>
+	<script src="{% static "js/group.js" %}"></script>
+
+	<script>
+
+		$( document ).ready(function() {
+
+
+		});
+	</script>
+
+	{% endblock %}

@@ -1,0 +1,236 @@
+
+
+{% load i18n staticfiles %}
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<title>{% block head_title %}GTS_HUB{% endblock %}</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link rel="stylesheet" href="{% static "css/vendor/normalize.min.css" %}">
+	<link rel="stylesheet" href="{% static "css/vendor/jquery-ui.css" %}">
+
+	<link rel="stylesheet" href="{% static "css/vendor/jquery.dataTables.1.10.0.css" %}">
+	<link rel="stylesheet" href="{% static "css/vendor/jquery.datetimepicker.css" %}">
+	<link rel="stylesheet" href="{% static "css/vendor/superfish.css" %}">
+	<link rel="stylesheet" href="{% static "css/main.css" %}">
+
+	<link rel="stylesheet" href="{% static "css/form-validation.css" %}">
+	<link rel="stylesheet" href="{% static "css/form-validation.css" %}">
+
+	<link rel="stylesheet" href="{% static "css/vendor/bootstrap.min.css"%}">
+	<link rel="stylesheet" href="{% static "css/changepassword.css"%}">
+	<link rel="stylesheet" href="{% static "css/vendor/dragAnddropGtsTp.css" %}">
+
+
+	{% block styles %}{% endblock %}
+
+	<!--[if lt IE 9]>
+    	    <script src="{% static "js/vendor/html5shiv.js" %}"></script>
+    	    <![endif]-->
+
+    	    <script src="{% static "js/vendor/jquery-1.11.1.min.js" %}"></script>
+    	    <script src="{% static "js/vendor/jquery.dataTables.1.10.0.min.js" %}"></script>
+    	    <script str="{% static "js/vendor/jquery.cookie.js" %}"></script>
+
+    	    <script src="{% static "js/vendor/angular-1.3.7.js" %}"></script>
+    	    <script src="{% static "js/vendor/angular-locale_fr-fr.js" %}"></script>
+    	    <script src="{% static "js/vendor/angular-gettext-1.0.1.min.js" %}"></script>
+    	    <script src="{% static "js/vendor/angular-ui-router.min.js" %}"></script>
+    	    <script src="{% static "js/vendor/angular-animate.min.js" %}"></script>
+
+    	    <script src="{% static "js/vendor/jquery-ui.min.js" %}"></script>
+
+
+    	    <script src="{% static "js/vendor/bootstrap.min.js" %}"></script>
+
+
+    	</head>
+    	<body>
+
+    		<header>
+
+    			<div id="status-bar">
+    				<span style="font-size: 0.6em">
+
+    					Version : 20/10/2015 v1.0.23 |
+    					Environnement : {{ ENVIRONMENT_NAME }} |
+    					Database : {{ DATABASE_INSTANCE }} |
+    					Workstation : {{ REMOTE_HOST.hostname }}
+
+    					{% if request.user.is_authenticated %}
+    					user :<div style="display:inline;" id="userid">{{ request.user.usr_userid }}</div>|
+
+
+    					<a type="button" href="{% url "logout" %}" class="btn btn-default btn-xs">
+    						<span  aria-hidden="true"></span>{% trans "logout" %}
+    					</a>
+    					<button type="button" class="btn btn-primary btn-xs" data-toggle="modal" data-target="#myModal"> <span   data-toggle="modal" data-target="#myModal" aria-hidden="true"></span> Password</button>
+
+
+    					{% else %}
+    					<a href="{% url "login" %}">{% trans "login" %} </a>
+    					{% endif %}
+    				</span>
+    			</div>
+
+    			<a href="{% url "menu_after_login" %}"><img src="{% static "img/sodexi-logo.jpg" %}" /></a>
+
+    			<span id="sodexi-title"> Gedephy Tracking System </span>
+
+    			{# {% if request.user.is_authenticated %} #}
+    			<div id="menu">
+    				<ul class="sf-menu">
+    					<!-- <li> -->
+    					<!--   Accueil -->
+    					<!-- </li> -->
+
+    					{% for level1, values1 in MENU.items %}
+    					<li> <a href="#">{{ level1 }} </a>
+
+    						<ul>
+    							{% for level2 in values1 %}
+    							{% if not level2.label %}
+    							<li> 
+    								{% for k, v in level2.items %}
+    								<a href="##"> {{  k }} </a> 
+    								<ul>
+    									{% for vv in v %}
+    									<li> <a class="draggable" href="{{ vv.url }}">{{ vv.label }} </a> </li>
+    									{% endfor %}
+    								</ul>
+    								{% endfor %}
+    							</li>
+
+    							{% else %}
+    							<li> <a class="draggable" href="{{ level2.url }}"> {{ level2.label }} </a> </li>
+    							{% endif %}
+    							{% endfor %}
+    						</ul>
+    					</li>
+    					{% endfor %}
+
+
+    				</ul>
+    			</div>
+    			{# {% endif %} #}
+
+    		</header>
+
+
+
+    		<div  ng-app="gtsApp" >
+
+
+
+    			{% block content %}
+
+
+    			{% endblock %}
+
+
+    			{% verbatim %} 
+
+
+    			<!-- Modal -->
+    			<div class="modal fade" id="myModal" role="dialog" ng-controller="changepassword" ng-model="shared.alluser">
+    				<div class="modal-dialog">
+
+    					<!-- Modal content-->
+    					<div class="modal-content">
+    						<div class="modal-header">
+    							<button type="button" class="close" data-dismiss="modal">×</button>
+    							<h4 class="modal-title" ng-class="{ 'text-danger':mandatory  }" ng-if="mandatory" translate >Change password mandatory </h4>
+    							<h4 class="modal-title" ng-if="!mandatory" translate > Change password </h4>
+
+    						</div>
+    						<div class="modal-body" >
+
+    							<form name="resetPasswordForm" ng-submit="resetPassword(password)">
+
+    								<label for="exampleInputEmail1" translate >User</label>
+    								<input class="form-control input-sm " ng-disabled=true ng-model="shared.alluser.usr_userid"  id="description" type="text" maxChoice="1" >
+
+    								<div class="form-group"  ng-class="{ 'has-error': shared.errors.passwordolderror||isRequired}" >
+    									<label for="exampleInputEmail1" translate > Password</label>
+
+    									<input name="passwordold" type="password"  class="form-control input-sm "  ng-model="shared.passwordold" id="description"  maxChoice="1" 
+    									ng-required="isRequired" />
+
+    									<span id="helpBlock2" class="help-block"  ng-show="isRequired" translate > Required 
+    									</span>
+    									<span id="helpBlock2" class="help-block"  ng-show="shared.errors.passwordolderror" translate >  A does not match your password
+    									</span>
+    								</span>
+    							</div>
+
+    							<div class="form-group"  ng-class="{ 'has-error': passwordnewerror }" >
+
+    								<label for="exampleInputEmail1" translate >New password</label>
+
+    								<input  type="password"  class="form-control input-sm "  ng-model="shared.passwordnew" ng-required="true" id="password-to-verify" name="passwordnew"
+    								>
+
+    								<span id="helpBlock2" class="help-block"  ng-show="passwordnewerror" translate >   Password can not be the same as the old
+    								</span>
+    								
+    							</div>
+
+    							<div class="form-group"   ng-class="{ 'has-error':resetPasswordForm.verifyPassword.$error.passwordMatch   }" >
+
+    								<label for="exampleInputEmail1" translate > Confirmate password </label>
+    								<input type="password"  class="form-control input-sm "  ng-model="shared.verifyPassword" ng-required="true" name="verifyPassword"
+    								password-match   />
+    								<span id="helpBlock2" class="help-block"  ng-show="resetPasswordForm.verifyPassword.$error.passwordMatch " translate > Passwords Must Match.
+    								</span>
+
+    							</div>
+
+    							<div class="modal-footer">
+    								<button type="button"  class="btn btn-default"  data-dismiss="modal" translate >cancel</button>
+    								
+
+    								<button   ng-click="shared.ok()"  ng-hide="resetPasswordForm.$invalid || passwordolderror ||  passwordnewerror" type="button" class="btn btn-success  " translate >Validate</button>
+
+
+    							</div>
+    							
+    						</form>
+    					</div>
+    				</div>
+
+    			</div>
+    		</div>
+    	</div>
+
+    	{% endverbatim %} 
+
+    	<script src="{% static "js/vendor/moment-2.8.1.min.js" %}"></script>
+    	<script src="{% static "js/vendor/moment-range.js" %}"></script>
+    	<script src="{% static "js/vendor/angular-hotkeys-1.4.3.min.js" %}"></script>
+    	<script src="{% static "js/vendor/jquery.datetimepicker-2.3.4.js" %}"></script>
+    	<script src="{% static "js/vendor/hoverIntent-r7.js" %}"></script>
+    	<script src="{% static "locale/translations.js" %}"></script>
+    	<script src="{% static "js/vendor/jquery.inputmask.bundle.min.js" %}"></script>
+    	<script src="{% static "js/vendor/angular-dragdrop.min.js" %}"></script>
+    	<script src="{% static "js/vendor/superfish-1.7.4.min.js" %}"></script>
+    	<script src="{% static "js/main.js" %}"></script>
+    	<script src="{% static "js/vendor/underscore-1.7.0.min.js" %}"></script>
+    	<script src="{% static "js/change_password.js" %}"></script>
+
+    	{% include 'session_security/all.html' %}
+
+    	<script>
+	 // Add the CSRF Token
+	 gtsApp.config(['$httpProvider', function($httpProvider) {
+	 	$httpProvider.defaults.headers.common['X-CSRFToken'] = '{{ csrf_token|escapejs }}';
+	 }]);
+	</script>
+
+	{% block scripts %}{% endblock %}
+
+</body>
+</html>
+
